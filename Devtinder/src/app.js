@@ -1,6 +1,7 @@
 const express = require("express");
 const { adminAuth, isUserAuth } = require("./middleware/auth");
 const connectDB = require("./config/database");
+const User = require("./models/user");
 const app = express();
 
 // app.use("/admin", adminAuth);
@@ -17,6 +18,25 @@ const app = express();
 //     res.send("users using there own data");
 // })
 
+
+app.post("/signup", async (req, res) => {
+    const user = new User({
+        name: "Harshkumaar",
+        email: "harshkumar@gmail.com",
+        password: "harshkumar",
+
+    });
+    try {
+        await user.save();
+        res.send("user created");
+    } catch (error) {
+        res.status(400).send(error.message);
+    }
+});
+
+
+
+
 connectDB()
     .then(() => {
         console.log("MongoDB Connected");
@@ -25,6 +45,5 @@ connectDB()
         });
     })
     .catch(err => console.error("not connect"));
-
 
 
