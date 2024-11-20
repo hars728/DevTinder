@@ -50,18 +50,35 @@ app.delete("/user", async (req, res) => {
         res.status(400).send("something went wronge");
     }
 });
-app.patch("/user", async (req, res) => {
-    const userforupdate = req.body.userId;
+
+app.patch("/user/:userId", async (req, res) => {
+    const users = req.params?.userId;
     const data = req.body;
-    console.log(userforupdate);
+    console.log(users);
     try {
-        const user = await User.findByIdAndUpdate(userforupdate, data, {
+        const allowed_updates = [
+            "age",
+            "phoneNo",
+            "gender",
+            "photo",
+            "about",
+            "address",
+            "skills",
+            "password",
+        ];
+        const updates = Object.keys(data).every((k) => allowed_updates.includes(k));
+        if (!updates) {
+            throw new Error("invalid data");
+        }
+        const user = await User.findByIdAndUpdate(users, data, {
+
             returnDocument: "after",
             runValidators: "true",
         });
+        console.log(user);
 
         res.send("user update successfully");
-    } catch {
+    } catch (err) {
         res.status(400).send("something went wrong");
     }
 });
