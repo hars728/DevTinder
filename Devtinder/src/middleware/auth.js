@@ -1,27 +1,28 @@
-const adminAuth = (req, res, next) => {
-    console.log("checking the auth first");
-    const token = "harsh";
-    const isAdminAuth = token === "harsh";
-    if (isAdminAuth) {
-        next();
-    }
-    else {
-        res.status(401).send("you are not admin");
-    }
-};
+const jwt = require("jsonwebtoken");
+const User = require("../models/user");
 
-const isUserAuth = (req, res, next) => {
-    console.log("checking the auth first");
-    const token = "harsh";
-    const isAdminAuth = token === "harsh";
-    if (isAdminAuth) {
+const isUserAuth = async (req, res, next) => {
+    try {
+        const { token } = req.cookies;
+        if (!token) {
+            return res.status(401).json({ message: "Please login to access this resource" })
+        }
+        const decodeObj = await jwt.verify(token, "Harsh@123");
+        const { _id } = decodeObj;
+        const user = await User.findById(_id);
+        if (!user) {
+            return res.status(401).json({ message: "User not found" })
+        }
+        req.user = user;
         next();
+    } catch (error) {
+        res.send(400).send("Error :", error.message);
+
     }
-    else {
-        res.status(401).send("you are not admin");
-    }
+
+
 };
 module.exports = {
-    adminAuth,
+
     isUserAuth
 };

@@ -62,20 +62,10 @@ app.post("/login", async (req, res) => {
 });
 
 
-app.get("/profile", async (req, res) => {
+app.get("/profile", isUserAuth, async (req, res) => {
     try {
 
-        const cookie = req.cookies;
-        const { token } = cookie;
-        if (!token) {
-            return res.status(401).send("Unauthorized");
-        }
-        const verify = await jwt.verify(token, "Harsh@123");
-        const userid = verify._id;
-        const user = await User.findById(userid);
-        if (!user) {
-            return res.status(404).send("User not found");
-        }
+        const user = req.user;
         res.send(user);
 
     } catch (error) {
