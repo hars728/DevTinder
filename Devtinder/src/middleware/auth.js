@@ -16,8 +16,7 @@ const isUserAuth = async (req, res, next) => {
         req.user = user;
         next();
     } catch (error) {
-        res.send(400).send("Error :", error.message);
-
+        res.status(400).send("Error : " + error.message);
     }
 
 
